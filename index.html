@@ -1,0 +1,715 @@
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live UK Travel Times - Train & Bus</title>
+    <style>
+       body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f0f0f0;
+            color: #333;
+            transition: background 0.5s, color 0.5s, font-size 0.5s;
+        }
+
+        #floatingBanner {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px;
+            text-align: center;
+            z-index: 100;
+            font-size: 1.2em;
+            display: none; /* Initially hidden */
+        }
+
+        #landingPage {
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        .emojiButton {
+            font-size: 4em;
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .emojiButton:hover {
+            transform: scale(1.2);
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        #busSection, #trainSection, #customisationSection {
+            display: none;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #555;
+        }
+
+        table {
+            width: 90%;
+            border-collapse: collapse;
+            font-size: 1.1em;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+            color: black;
+        }
+
+        tr:nth-child(even) {
+            background-color: #d3e6ff;
+        }
+
+        tr:nth-child(odd) {
+            background-color: #f3ccff;
+        }
+
+        footer {
+            background-color: #333;
+            color: #fff;
+            padding: 20px 0;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            text-align: center;
+        }
+
+        #customisationSection {
+            margin-top: 20px;
+        }
+
+        #colorPicker, #fontPicker, #sizePicker {
+            padding: 10px;
+            font-size: 18px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+            
+            
+            
+            .bus-departure {
+    display: inline-block;
+    padding: 102px 20px;
+    margin: 10px 0;
+    border-radius: 8px;
+    font-size: 48px;
+    font-weight: bold;
+    color: white;
+    text-align: center;
+    width: fit-content;
+    max-width: 100%;
+}
+
+.green {
+    background-color: #28a745; /* Green */
+    border: 3px solid #1e7e34;
+}
+
+.amber {
+    background-color: #ffc107; /* Amber */
+    border: 3px solid #e0a800;
+}
+
+.red {
+    background-color: #dc3545; /* Red */
+    border: 3px solid #b21f2d;
+}
+            /* Background Shapes Layer */
+.background-shapes {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1; /* Keeps it behind all content */
+    overflow: hidden;
+}
+
+/* Shapes Styling */
+.shape {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.6; /* Slight transparency */
+    animation: moveShapes 20s infinite linear;
+}
+
+/* Individual Shape Properties */
+.shape-1 {
+    background: rgba(231, 76, 60, 0.8); /* Red */
+    width: 100px;
+    height: 100px;
+    top: 10%;
+    left: 15%;
+    animation-duration: 15s;
+}
+
+.shape-2 {
+    background: rgba(52, 152, 219, 0.8); /* Blue */
+    width: 150px;
+    height: 150px;
+    top: 40%;
+    left: 70%;
+    animation-duration: 20s;
+}
+
+.shape-3 {
+    background: rgba(46, 204, 113, 0.8); /* Green */
+    width: 120px;
+    height: 120px;
+    top: 70%;
+    left: 30%;
+    animation-duration: 12s;
+}
+
+.shape-4 {
+    background: rgba(241, 196, 15, 0.8); /* Yellow */
+    width: 180px;
+    height: 180px;
+    top: 20%;
+    left: 60%;
+    animation-duration: 250s;
+}
+
+.shape-5 {
+    background: rgba(155, 89, 182, 0.8); /* Purple */
+    width: 80px;
+    height: 80px;
+    top: 50%;
+    left: 10%;
+    animation-duration: 18s;
+}
+
+/* Animation for Shapes */
+@keyframes moveShapes {
+    0% {
+        transform: translate(0, 0) rotate(0deg);
+    }
+    25% {
+        transform: translate(50px, -50px) rotate(45deg);
+    }
+    50% {
+        transform: translate(-50px, 50px) rotate(90deg);
+    }
+    75% {
+        transform: translate(50px, 50px) rotate(135deg);
+    }
+    100% {
+        transform: translate(0, 0) rotate(360deg);
+    }
+}
+
+.departure-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.departure-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 100px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    transition: transform 0.2s, box-shadow 0.2s;
+    width: 550px;
+    text-align: center;
+}
+
+.departure-box:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+}
+
+.bus-number {
+    font-weight: bold;
+    font-size: 1.2em;
+    color: #007BFF;
+}
+
+.destination {
+    font-size: 1em;
+    margin-top: 5px;
+    color: #333;
+}
+
+.departure-time {
+    font-size: 0.9em;
+    margin-top: 5px;
+    color: #555;
+}
+            
+.modern-list ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* List item styling */
+.modern-list li {
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    width: 100%;
+    font-size: 1rem;
+    color: #333;
+    
+    cursor: pointer;
+    
+}
+
+.modern-list li:hover {
+    background-color: #007BFF;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Bullet icon styling */
+.bullet-icon {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    margin-right: 10px;
+    background-color: #007BFF;
+    border-radius: 50%;
+    transition: background-color 0.3s;
+}
+
+.modern-list li:hover .bullet-icon {
+    background-color: white;
+}
+/* Modern styling for the dropdown container */
+/* Responsive dropdown with green background and black text */
+#results select {
+    width: 100%; /* Span full width */
+    max-width: 100%; /* Prevent overflow */
+    padding: 12px; /* Comfortable padding */
+    margin-top: 12px; /* Add spacing */
+    font-size: 1rem; /* Readable font size */
+    color: #000; /* Black text */
+    background: linear-gradient(145deg, #28a745, #218838); /* Green background with gradient */
+    border: 2px solid rgba(0, 0, 0, 0.2); /* Subtle border */
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.1); /* Soft shadow */
+    transition: all 0.3s ease-in-out; /* Smooth transitions */
+    cursor: pointer; /* Pointer cursor for better UX */
+    appearance: none; /* Custom styling */
+}
+
+/* Hover effect */
+#results select:hover {
+    background: linear-gradient(145deg, #218838, #28a745); /* Invert gradient for hover */
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2); /* More prominent shadow */
+}
+
+/* Focus effect */
+#results select:focus {
+    outline: none; /* Remove default outline */
+    border-color: #155724; /* Darker green border on focus */
+    background: linear-gradient(145deg, #1e7e34, #28a745); /* Slightly darker focus gradient */
+    box-shadow: 0 0 10px rgba(33, 136, 56, 0.5); /* Green glow effect */
+}
+
+/* Highlight selected option */
+#results select:active {
+    background: linear-gradient(145deg, #155724, #1e7e34); /* Highlight on active */
+    color: #fff; /* White text for contrast */
+    border-color: #1c7430; /* Accent border */
+}
+
+
+/* Hover and focus effects for better interactivity */
+#results select:hover, 
+#results select:focus {
+    border-color: #4A90E2; /* Bright blue for focus */
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15), inset 0 -2px 0 rgba(0, 0, 0, 0.1);
+    background: linear-gradient(145deg, rgba(255, 255, 255, 1), rgba(240, 240, 240, 1));
+}
+
+/* Add a slight animation when the dropdown is clicked */
+@keyframes dropdown-pop {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+#results select:active {
+    animation: dropdown-pop 0.2s ease;
+}
+
+
+/* Adding hover and focus effects */
+#results select:hover, 
+#results select:focus {
+    border-color: #007BFF;
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* Optional: Arrow icon customization */
+#results select::after {
+    content: '▼';
+    position: absolute;
+    right: 15px;
+    top: calc(50% - 8px);
+    pointer-events: none;
+    color: #555;
+}
+
+/* Optional styling for the header */
+#results h2 {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    color: #333;
+}
+            
+            /* General Styles for Landing Page */
+#landingPage {
+    text-align: center;
+    margin-top: 20px;
+    font-family: Arial, sans-serif;
+}
+
+/* Button Styling */
+.emojiButton {
+    padding: 10px 20px;
+    font-size: 1.5rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin: 10px;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.emojiButton:hover {
+    background-color: #007BFF;
+    color: white;
+    transform: scale(1.1);
+}
+
+/* Christmas Tree GIF Styling */
+#christmasTree img {
+    width: 200px; /* Adjust size as needed */
+    height: auto;
+    margin-top: 20px;
+}
+
+/* Tinsel Styling */
+#tinsel img {
+    width: 80%; /* Reduce width to 80% of the container */
+    height: auto; /* Maintain aspect ratio */
+    margin-top: 20px;
+    max-height: 50px; /* Ensure it stays thin */
+    object-fit: cover; /* Crops if necessary while keeping it proportional */
+}
+
+/* Flashing Merry Christmas Message */
+#christmasMessage {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-top: 20px;
+    animation: flashColors 1s infinite;
+    text-transform: uppercase;
+    text-align: center; /* Align text to the center */
+}
+/* Animation for Flashing Text */
+@keyframes flashColors {
+    0% { color: red; }
+    50% { color: green; }
+    100% { color: red; }
+}
+/* Style for the suggestions container */
+#suggestions {
+    border: 1px solid #ccc;
+    background-color: rgba(144, 238, 144, 0.8); /* Light green semi-transparent */
+    max-height: 150px;
+    overflow-y: auto;
+    border-radius: 4px;
+    padding: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Style for individual suggestion items */
+#suggestions div {
+    padding: 10px;
+    cursor: pointer;
+    color: #2d2d2d; /* Dark text */
+    font-size: 16px;
+    border-radius: 3px;
+    transition: background-color 0.2s ease-in-out;
+}
+
+/* Highlight on hover or selection */
+#suggestions div:hover {
+    background-color: rgba(34, 139, 34, 0.9); /* Darker green */
+    color: white; /* Highlighted text color */
+}
+            /* Styling for input boxes */
+input {
+    width: 100%; /* Full width */
+    max-width: 100%; /* Prevents overflow */
+    padding: 12px; /* Comfortable padding */
+    margin: 10px 0; /* Adds spacing between inputs */
+    font-size: 1rem; /* Readable text size */
+    color: #fff; /* White text */
+    background-color: #000; /* Black background */
+    border: 1px solid #555; /* Subtle border for contrast */
+    border-radius: 6px; /* Rounded corners for modern look */
+    box-sizing: border-box; /* Ensures padding is included in the width */
+    transition: border-color 0.3s, box-shadow 0.3s; /* Smooth hover/focus effects */
+}
+
+/* Hover effect */
+input:hover {
+    border-color: #fff; /* Highlight border on hover */
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.2); /* Add glow effect */
+}
+
+/* Focus effect */
+input:focus {
+    outline: none; /* Removes default outline */
+    border-color: #4A90E2; /* Bright blue border on focus */
+    box-shadow: 0 0 10px rgba(74, 144, 226, 0.5); /* Subtle glow */
+}
+
+
+#fetchButton,
+#downloadButton,
+#submitButton
+            {
+    display: none;
+}
+            
+            footer {
+    text-align: center;
+    font-size: 14px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    color: #555;
+    border-top: 1px solid #ddd;
+}
+
+#christmasDecor {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 100px;
+    gap: 80px; /* Space between tinsel and message */
+}
+
+#christmasMessage {
+    font-weight: bold;
+    color: #d32f2f;
+    animation: fade 2s infinite alternate;
+}
+
+@keyframes fade {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0.5;
+    }
+}
+
+footer img {
+    display: block;
+    height: auto;
+    width: auto;
+}
+
+
+footer {
+    text-align: center;
+    font-size: 14px;
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0); /* Fully transparent */
+    color: #555; /* Ensure text remains visible */
+    border-top: 1px solid rgba(0, 0, 0, 0.1); /* Subtle border */
+    backdrop-filter: none; /* Remove blur since no background */
+    box-shadow: none; /* Remove shadow for a cleaner see-through look */
+}
+.train-departure {
+    display: inline-block;
+    padding: 102px 20px;
+    margin: 10px 0;
+    border-radius: 8px;
+    font-size: 48px;
+    font-weight: bold;
+    color: white;
+    text-align: center;
+    width: fit-content;
+    max-width: 100%;
+}
+
+
+
+.green {
+    background-color: #28a745; /* Green */
+    border: 3px solid #1e7e34;
+}
+
+.amber {
+    background-color: #ffc107; /* Amber */
+    border: 3px solid #e0a800;
+}
+
+.red {
+    background-color: #dc3545; /* Red */
+    border: 3px solid #b21f2d;
+}
+
+    </style>
+</head>
+<body>
+        <div class="background-shapes">
+    <div class="shape shape-1"></div>
+    <div class="shape shape-2"></div>
+    <div class="shape shape-3"></div>
+    <div class="shape shape-4"></div>
+    <div class="shape shape-5"></div>
+</div>
+
+
+    <div id="floatingBanner">
+        <span id="bannerText"></span>
+        <button onclick="goBackToLanding()">Return to Landing Screen</button>
+            
+    </div>
+
+    <div id="landingPage">
+        <h1>Select Transport Mode</h1>
+        <button class="emojiButton" onclick="showBusSection()"><font size='100'>🚌</button>
+        <button class="emojiButton" onclick="showTrainSection()"><font size='100'>🚆</button>
+        <button class="emojiButton" onclick="showCustomisationSection()"><font size='100'>⚙️</button></font>
+    </div>
+
+
+  
+</div>
+    <div id="customisationSection"><br><br><br>
+        <h2>Customisation Options</h2>
+        <label for="colorPicker">Choose The Background Colour:</label>
+        <input type="color" id="colorPicker" value="#f0f0f0"><br>
+
+        <label for="fontPicker">Choose Font:</label>
+        <select id="fontPicker">
+            <option value="Arial">Arial</option>
+            <option value="Comic Sans MS">Comic Sans MS</option>
+            <option value="Calibri">Calibri</option>
+            <option value="Times New Roman">Times New Roman</option>
+        </select><br>
+
+     
+
+        <button onclick="applyCustomisation()">Apply</button>
+       
+        <p>Website made and maintained by KennyM92</p>
+                
+     
+  
+            
+
+    </div>
+
+    <div id="busSection">
+<br><br>
+           <h2>Live UK Bus Times</h2>
+ <div id="searchForm">
+    <select id="locationSelect" onchange="handleLocationSelection()">
+       <option value="default"></option>
+        <option value="gps">Use Current Location</option>
+        <option value="manual">Enter Postcode or Road Name</option>
+    </select>
+
+    <input type="text" id="locationInput" placeholder="Enter postcode or bus stop name" style="display: none;">
+    <button onclick="searchBusStops()">Search</button>
+</div>
+
+        <div id="results"></div>
+        <div id="stopName" class="box"></div>
+        <div id="departures"></div>
+        
+        <div id="loadingMessage" style="display:none;"><marquee>working away....</marquee></div>
+    </div>
+
+    <div id="trainSection">
+<br><br>
+        <h2>Live UK Train Times</h2>
+        <div id="searchContainer">
+            <div id="inputContainer">
+                
+            <input type="text" id="stationInput" placeholder="Enter station name">
+    <div id="suggestions"></div>
+    <button id="fetchButton" disabled>Fetch Train Data</button>
+    <button id="downloadButton" disabled>Download</button>
+
+
+
+
+                <button id="submitButton" onclick="fetchTrainData()">Get train times</button>
+            </div>
+        </div>
+
+        <div id="trainTimesContainer"></div>
+
+        
+    </div>
+
+ <footer>
+    <p>Made and maintained by Kenny</p>
+
+</footer>
+
+
+    <script>
+
+const _0xae7436=_0x88be;(function(_0x597825,_0x46d953){const _0xd3a771=_0x88be,_0x5e3edc=_0x597825();while(!![]){try{const _0x5d0988=-parseInt(_0xd3a771(0x218))/0x1*(parseInt(_0xd3a771(0x21f))/0x2)+-parseInt(_0xd3a771(0x23e))/0x3*(parseInt(_0xd3a771(0x259))/0x4)+parseInt(_0xd3a771(0x1f1))/0x5+parseInt(_0xd3a771(0x251))/0x6*(parseInt(_0xd3a771(0x243))/0x7)+-parseInt(_0xd3a771(0x21c))/0x8*(parseInt(_0xd3a771(0x262))/0x9)+-parseInt(_0xd3a771(0x1e2))/0xa+-parseInt(_0xd3a771(0x261))/0xb*(-parseInt(_0xd3a771(0x22a))/0xc);if(_0x5d0988===_0x46d953)break;else _0x5e3edc['push'](_0x5e3edc['shift']());}catch(_0x2722e4){_0x5e3edc['push'](_0x5e3edc['shift']());}}}(_0x46c7,0xbebba));function handleLocationSelection(){const _0x426b3d=_0x88be,_0x36b646=document[_0x426b3d(0x205)](_0x426b3d(0x1f4))[_0x426b3d(0x235)],_0x411660=document[_0x426b3d(0x205)](_0x426b3d(0x20e));if(_0x36b646==='gps')getPostcodeFromGPS(),_0x411660[_0x426b3d(0x240)]['display']='none';else _0x36b646===_0x426b3d(0x202)&&(_0x411660[_0x426b3d(0x240)]['display']=_0x426b3d(0x201),_0x411660[_0x426b3d(0x235)]='');}function updateBannerTime(){const _0x1807cb=_0x88be,_0x4906c0=new Date(),_0x1c2334={'weekday':_0x1807cb(0x22f),'year':_0x1807cb(0x25b),'month':_0x1807cb(0x22f),'day':'numeric'},_0x48b753=_0x4906c0[_0x1807cb(0x1f9)](_0x1807cb(0x22d),_0x1c2334),_0x2be625=_0x4906c0[_0x1807cb(0x1ea)](_0x1807cb(0x22d));document[_0x1807cb(0x205)](_0x1807cb(0x20b))['style']['display']=document[_0x1807cb(0x205)](_0x1807cb(0x206))[_0x1807cb(0x240)][_0x1807cb(0x226)]===_0x1807cb(0x239)?_0x1807cb(0x201):_0x1807cb(0x239),document['getElementById'](_0x1807cb(0x1fb))[_0x1807cb(0x24a)]=_0x48b753+',\x20'+_0x2be625;}setInterval(updateBannerTime,0x3e8);function showBusSection(){const _0x3cc4d0=_0x88be;resetBusData(),document[_0x3cc4d0(0x205)]('landingPage')[_0x3cc4d0(0x240)][_0x3cc4d0(0x226)]=_0x3cc4d0(0x239),document[_0x3cc4d0(0x205)](_0x3cc4d0(0x1fe))[_0x3cc4d0(0x240)][_0x3cc4d0(0x226)]=_0x3cc4d0(0x201);}function showTrainSection(){const _0x4cf43c=_0x88be;resetTrainData(),document['getElementById'](_0x4cf43c(0x206))[_0x4cf43c(0x240)][_0x4cf43c(0x226)]='none',document['getElementById']('trainSection')[_0x4cf43c(0x240)][_0x4cf43c(0x226)]='block';}function showCustomisationSection(){const _0x42a3c2=_0x88be;document[_0x42a3c2(0x205)](_0x42a3c2(0x206))['style'][_0x42a3c2(0x226)]=_0x42a3c2(0x239),document[_0x42a3c2(0x205)](_0x42a3c2(0x25a))[_0x42a3c2(0x240)][_0x42a3c2(0x226)]=_0x42a3c2(0x201);}function goBackToLanding(){const _0x17bff1=_0x88be;document[_0x17bff1(0x205)](_0x17bff1(0x206))[_0x17bff1(0x240)][_0x17bff1(0x226)]=_0x17bff1(0x201),document[_0x17bff1(0x205)]('busSection')['style'][_0x17bff1(0x226)]=_0x17bff1(0x239),document[_0x17bff1(0x205)](_0x17bff1(0x1f2))[_0x17bff1(0x240)][_0x17bff1(0x226)]=_0x17bff1(0x239),document[_0x17bff1(0x205)](_0x17bff1(0x25a))[_0x17bff1(0x240)][_0x17bff1(0x226)]='none';}function _0x46c7(){const _0x115eb0=['center','fontFamily','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22departure-box\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20class=\x22bus-number\x22>','</select>','Geolocation\x20is\x20not\x20supported\x20by\x20your\x20browser','6SjDwZP','parseFromString','text','Error\x20fetching\x20bus\x20stops.\x20Please\x20try\x20again.','includes','appendChild','small','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<img\x20src=\x22','236yygYue','customisationSection','numeric','forEach','querySelector','will\x20only\x20work\x20when\x20tested\x20locally\x20atm!!!!','?expand=true','click','99UaMJEd','1354680DYiPqS','platform','On\x20time','medium','Loading...','2188300LvVcKV','loadingMessage','text/html','querySelectorAll','crsCode','etd','filter','toLowerCase','toLocaleTimeString','fontPicker','2px\x20solid\x20rgba(255,\x20255,\x20255,\x200.3)','</p>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22callingPoints\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<marquee\x20behavior=\x22scroll\x22\x20direction=\x22left\x22>','large','stationName','10px','1184455NCIJir','trainSection','getCurrentPosition','locationSelect','coords','<option\x20value=\x22','split','0.8em','toLocaleDateString','latitude','bannerText','https://www.nextbuses.mobi','trainTimesContainer','busSection','.</p>','Error\x20fetching\x20bus\x20stops:','block','manual','getLocation','rgba(255,\x20255,\x20255,\x200.1)','getElementById','landingPage','callingPoint','1em','\x20–\x20exp.\x20','\x0a\x20\x20\x20\x20\x20\x20\x20\x20<h2>Currently\x20showing\x20departures\x20from\x20','floatingBanner','https://www.nextbuses.mobi/WebView/BusStopSearch/BusStopSearchResults?id=','json','locationInput','https://huxley2.azurewebsites.net/all/','sta','stationInput','DOMContentLoaded','departures','geolocation','\x20at\x20platform\x20','textAlign','</p>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<p>Expected:\x20','162IkpMTT','\x20service\x20to\x20','body','operator','80bykxjE','https://raw.githubusercontent.com/davwheat/uk-railway-stations/refs/heads/main/stations.json','#departure-list\x20.BusStops\x20tr','19206tTKXUD','1.5em','color','backgroundColor','</div>','stopName','</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','display','border','addEventListener','innerHTML','4746492jHtZKR','suggestions','locationName','en-GB','div','long','trim','Error\x20fetching\x20train\x20data:','</option>','createElement','Error\x20fetching\x20bus\x20times:','value','N/A','error','<h2>Select\x20a\x20Bus\x20Stop:</h2><select\x20id=\x22busStopSelector\x22\x20onchange=\x22handleBusStopSelection()\x22>','none','input','trainServices','padding','Show\x20this\x20Stop\x20Only','7908iEXeyQ','td.Number\x20.Stops\x20a','style','results','subsequentCallingPoints','2938054AGWvUb','longitude','length','Error\x20fetching\x20bus\x20times.\x20Please\x20try\x20again.','.Stops\x20a','Error\x20loading\x20station\x20data:','selectedIndex','textContent','fontSize'];_0x46c7=function(){return _0x115eb0;};return _0x46c7();}function applyCustomisation(){const _0x4495b0=_0x88be,_0xb75bc3=document[_0x4495b0(0x205)]('colorPicker')[_0x4495b0(0x235)],_0x4f849f=document[_0x4495b0(0x205)](_0x4495b0(0x1eb))[_0x4495b0(0x235)];document[_0x4495b0(0x21a)]['style'][_0x4495b0(0x222)]=_0xb75bc3,document[_0x4495b0(0x21a)][_0x4495b0(0x240)][_0x4495b0(0x24d)]=_0x4f849f,document['body']['style'][_0x4495b0(0x221)]=fontColor;switch(size){case _0x4495b0(0x257):document[_0x4495b0(0x21a)][_0x4495b0(0x240)][_0x4495b0(0x24b)]=_0x4495b0(0x1f8);break;case _0x4495b0(0x1e0):document[_0x4495b0(0x21a)]['style'][_0x4495b0(0x24b)]=_0x4495b0(0x208);break;case _0x4495b0(0x1ee):document[_0x4495b0(0x21a)][_0x4495b0(0x240)][_0x4495b0(0x24b)]=_0x4495b0(0x220);break;}}function resetBusData(){const _0xfda123=_0x88be;document[_0xfda123(0x205)](_0xfda123(0x20e))[_0xfda123(0x235)]='',document['getElementById'](_0xfda123(0x241))['innerHTML']='',document[_0xfda123(0x205)](_0xfda123(0x213))[_0xfda123(0x229)]='',document[_0xfda123(0x205)]('stopName')['textContent']='';}function resetTrainData(){const _0x22c1b5=_0x88be;document[_0x22c1b5(0x205)](_0x22c1b5(0x211))[_0x22c1b5(0x235)]='',document[_0x22c1b5(0x205)]('trainTimesContainer')[_0x22c1b5(0x229)]='';}async function searchBusStops(){const _0x98f7a5=_0x88be,_0xe36d47=document[_0x98f7a5(0x205)]('locationInput')[_0x98f7a5(0x235)];if(!_0xe36d47)return;document[_0x98f7a5(0x205)]('loadingMessage')['style'][_0x98f7a5(0x226)]=_0x98f7a5(0x201),document[_0x98f7a5(0x205)]('results')['innerHTML']='',document[_0x98f7a5(0x205)](_0x98f7a5(0x213))['innerHTML']='';const _0x432dff=_0x98f7a5(0x20c)+encodeURIComponent(_0xe36d47);try{const _0x4d73fd=await fetch(_0x432dff),_0x5c6ee3=await _0x4d73fd[_0x98f7a5(0x253)](),_0x47df2f=new DOMParser(),_0x26f684=_0x47df2f[_0x98f7a5(0x252)](_0x5c6ee3,_0x98f7a5(0x1e4)),_0x5bb566=_0x26f684[_0x98f7a5(0x1e5)](_0x98f7a5(0x247));let _0x9542cd=_0x98f7a5(0x238);_0x5bb566[_0x98f7a5(0x25c)](_0x4433d3=>{const _0x94a321=_0x98f7a5,_0x5db827=_0x4433d3[_0x94a321(0x24a)]['trim']();if(_0x5db827[_0x94a321(0x245)]>=0x2&&!_0x5db827[_0x94a321(0x255)](_0x94a321(0x23d))){const _0xeaf010=_0x94a321(0x1fc)+_0x4433d3['getAttribute']('href');_0x9542cd+=_0x94a321(0x1f6)+_0xeaf010+'\x22>'+_0x5db827+_0x94a321(0x232);}}),_0x9542cd+=_0x98f7a5(0x24f),document['getElementById'](_0x98f7a5(0x241))[_0x98f7a5(0x229)]=_0x9542cd,document[_0x98f7a5(0x205)](_0x98f7a5(0x1e3))[_0x98f7a5(0x240)][_0x98f7a5(0x226)]=_0x98f7a5(0x239),handleBusStopSelection();}catch(_0x330abe){console['error'](_0x98f7a5(0x200),_0x330abe),document[_0x98f7a5(0x205)](_0x98f7a5(0x241))[_0x98f7a5(0x229)]=_0x98f7a5(0x254),document['getElementById'](_0x98f7a5(0x1e3))[_0x98f7a5(0x240)][_0x98f7a5(0x226)]=_0x98f7a5(0x239);}}function handleBusStopSelection(){const _0x27e197=_0x88be,_0x1db75b=document['getElementById']('busStopSelector'),_0x218f69=_0x1db75b['options'][_0x1db75b[_0x27e197(0x249)]];if(_0x218f69&&_0x218f69[_0x27e197(0x235)]){const _0x366419=_0x218f69[_0x27e197(0x253)],_0x21e1a6=_0x218f69[_0x27e197(0x235)];getBusTimes(_0x21e1a6,_0x366419);}}async function getBusTimes(_0xa01398,_0x2b414d){const _0x5d0edd=_0x88be;document['getElementById'](_0x5d0edd(0x1e3))[_0x5d0edd(0x240)][_0x5d0edd(0x226)]=_0x5d0edd(0x201),document[_0x5d0edd(0x205)](_0x5d0edd(0x213))[_0x5d0edd(0x229)]='';try{const _0x3e98d6=await fetch(_0xa01398),_0x2a8fe8=await _0x3e98d6[_0x5d0edd(0x253)](),_0x40ee83=new DOMParser(),_0x20400c=_0x40ee83[_0x5d0edd(0x252)](_0x2a8fe8,_0x5d0edd(0x1e4)),_0x7fe7da=_0x20400c[_0x5d0edd(0x1e5)](_0x5d0edd(0x21e));document[_0x5d0edd(0x205)](_0x5d0edd(0x224))[_0x5d0edd(0x24a)]=''+('Showing\x20departures\x20for\x20'+_0x2b414d)+'';let _0x534795='';_0x7fe7da[_0x5d0edd(0x25c)](_0x52c172=>{const _0x3f62ce=_0x5d0edd,_0x3d5e45=_0x52c172['querySelector'](_0x3f62ce(0x23f))[_0x3f62ce(0x24a)][_0x3f62ce(0x230)](),_0xd8af5a=_0x52c172[_0x3f62ce(0x25d)]('td:nth-child(2)\x20.Stops')['textContent'][_0x3f62ce(0x230)]()[_0x3f62ce(0x1f7)]('('),_0x338f0f=_0xd8af5a[0x0][_0x3f62ce(0x230)](),_0x5b244a=_0xd8af5a[_0x3f62ce(0x245)]>0x1?_0xd8af5a[0x1]['replace'](')','')[_0x3f62ce(0x230)]():_0x3f62ce(0x236);_0x534795+=_0x3f62ce(0x24e)+_0x3d5e45+'</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20class=\x22destination\x22>'+_0x338f0f+'</span>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20class=\x22departure-time\x22>'+_0x5b244a+_0x3f62ce(0x225);}),_0x534795+=_0x5d0edd(0x223),document[_0x5d0edd(0x205)](_0x5d0edd(0x213))['innerHTML']=_0x534795,document[_0x5d0edd(0x205)](_0x5d0edd(0x1e3))[_0x5d0edd(0x240)][_0x5d0edd(0x226)]='none';}catch(_0x2e9202){console[_0x5d0edd(0x237)](_0x5d0edd(0x234),_0x2e9202),document[_0x5d0edd(0x205)](_0x5d0edd(0x213))[_0x5d0edd(0x229)]=_0x5d0edd(0x246),document[_0x5d0edd(0x205)](_0x5d0edd(0x1e3))[_0x5d0edd(0x240)][_0x5d0edd(0x226)]=_0x5d0edd(0x239);}}document[_0xae7436(0x228)](_0xae7436(0x212),function(){const _0x2beb40=_0xae7436,_0x40d486=document['getElementById'](_0x2beb40(0x203));_0x40d486&&_0x40d486[_0x2beb40(0x228)]('click',getPostcodeFromGPS);});async function getPostcodeFromGPS(){const _0x31fc0f=_0xae7436;if(!navigator[_0x31fc0f(0x214)]){alert(_0x31fc0f(0x250));return;}document['getElementById']('locationInput')[_0x31fc0f(0x235)]=_0x31fc0f(0x1e1),navigator[_0x31fc0f(0x214)][_0x31fc0f(0x1f3)](_0x17cfa1=>{const _0x210164=_0x31fc0f,_0x1fca7e=_0x17cfa1['coords'][_0x210164(0x1fa)],_0x40ee49=_0x17cfa1[_0x210164(0x1f5)][_0x210164(0x244)];document[_0x210164(0x205)]('locationInput')[_0x210164(0x235)]=_0x1fca7e+',\x20'+_0x40ee49;},_0x448648=>{const _0x4a0d2d=_0x31fc0f;document[_0x4a0d2d(0x205)](_0x4a0d2d(0x20e))[_0x4a0d2d(0x235)]='',alert(_0x4a0d2d(0x25e));});}let stationData=[];async function loadStationData(){const _0x3c2501=_0xae7436;try{const _0x3fd5b8=await fetch(_0x3c2501(0x21d));stationData=await _0x3fd5b8['json']();}catch(_0x445729){console[_0x3c2501(0x237)](_0x3c2501(0x248),_0x445729);}}async function fetchTrainData(_0xb4272d){const _0x4f14df=_0xae7436;try{const _0x351c5d=await fetch(_0x4f14df(0x20f)+_0xb4272d+_0x4f14df(0x25f)),_0x8fc892=await _0x351c5d[_0x4f14df(0x20d)]();displayTrainData(_0x8fc892,_0xb4272d);}catch(_0x52fc1e){console[_0x4f14df(0x237)](_0x4f14df(0x231),_0x52fc1e);}}function displayTrainData(_0x23b7f2,_0x4f87a0){const _0x12edf1=_0xae7436,_0x1a7bf0=document[_0x12edf1(0x205)](_0x12edf1(0x1fd));_0x1a7bf0['innerHTML']='';const _0x4815b4=document['createElement'](_0x12edf1(0x22e));_0x4815b4['style'][_0x12edf1(0x216)]=_0x12edf1(0x24c),_0x4815b4[_0x12edf1(0x240)][_0x12edf1(0x23c)]=_0x12edf1(0x1f0),_0x4815b4[_0x12edf1(0x240)]['backgroundColor']=_0x12edf1(0x204),_0x4815b4[_0x12edf1(0x229)]=_0x12edf1(0x20a)+_0x4f87a0+'</h2>\x0a\x20\x20\x20\x20',_0x1a7bf0[_0x12edf1(0x256)](_0x4815b4),_0x23b7f2[_0x12edf1(0x23b)]?_0x23b7f2[_0x12edf1(0x23b)][_0x12edf1(0x25c)](_0x528bea=>{const _0x13ce31=_0x12edf1,_0x264783=_0x528bea[_0x13ce31(0x210)]+'\x20'+_0x528bea['operator']+_0x13ce31(0x219)+_0x528bea['destination'][0x0][_0x13ce31(0x22c)],_0x393d27=_0x528bea[_0x13ce31(0x1e7)]===_0x13ce31(0x1df)?_0x13ce31(0x1df):'Delayed\x20until\x20'+_0x528bea['etd'],_0x649911=_0x528bea[_0x13ce31(0x21b)]+'.png',_0x166f3b=document['createElement']('div');_0x166f3b['style'][_0x13ce31(0x227)]=_0x13ce31(0x1ec),_0x166f3b['style'][_0x13ce31(0x222)]=_0x13ce31(0x204),_0x166f3b[_0x13ce31(0x240)]['padding']=_0x13ce31(0x1f0),_0x166f3b[_0x13ce31(0x229)]=_0x13ce31(0x258)+_0x649911+'\x22\x20alt=\x22'+_0x528bea[_0x13ce31(0x21b)]+'\x22\x20style=\x22width:50px;\x20height:50px;\x20display:block;\x20margin-bottom:5px;\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<p>'+_0x264783+_0x13ce31(0x217)+_0x393d27+_0x13ce31(0x215)+_0x528bea[_0x13ce31(0x263)]+_0x13ce31(0x1ed)+getCallingPoints(_0x528bea)+'</marquee>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20',_0x1a7bf0[_0x13ce31(0x256)](_0x166f3b);}):_0x1a7bf0[_0x12edf1(0x229)]+='<p>No\x20train\x20services\x20available\x20for\x20'+_0x4f87a0+_0x12edf1(0x1ff);}function getCallingPoints(_0x385818){const _0x5db5ae=_0xae7436;let _0x2e1929='';return _0x385818[_0x5db5ae(0x242)]&&_0x385818[_0x5db5ae(0x242)][0x0][_0x5db5ae(0x207)]&&_0x385818[_0x5db5ae(0x242)][0x0][_0x5db5ae(0x207)][_0x5db5ae(0x25c)](_0x5cc235=>{const _0x156d2a=_0x5db5ae;_0x2e1929+='>>\x20'+_0x5cc235[_0x156d2a(0x22c)]+_0x156d2a(0x209)+_0x5cc235['st']+'\x0a';}),_0x2e1929;}const stationInput=document[_0xae7436(0x205)](_0xae7436(0x211)),suggestions=document[_0xae7436(0x205)](_0xae7436(0x22b));function _0x88be(_0x298ed7,_0x2c4589){const _0x46c749=_0x46c7();return _0x88be=function(_0x88beac,_0x4b5759){_0x88beac=_0x88beac-0x1df;let _0x5c3e1a=_0x46c749[_0x88beac];return _0x5c3e1a;},_0x88be(_0x298ed7,_0x2c4589);}stationInput[_0xae7436(0x228)](_0xae7436(0x23a),()=>{const _0x2ffa90=_0xae7436,_0x545e59=stationInput[_0x2ffa90(0x235)][_0x2ffa90(0x1e9)]();suggestions[_0x2ffa90(0x229)]='';if(_0x545e59[_0x2ffa90(0x245)]>0x0){const _0x55dc9e=stationData[_0x2ffa90(0x1e8)](_0x5d5e21=>_0x5d5e21[_0x2ffa90(0x1ef)][_0x2ffa90(0x1e9)]()[_0x2ffa90(0x255)](_0x545e59));_0x55dc9e['forEach'](_0x1bfe89=>{const _0x4772dc=_0x2ffa90,_0x1451c0=document[_0x4772dc(0x233)](_0x4772dc(0x22e));_0x1451c0[_0x4772dc(0x24a)]=_0x1bfe89[_0x4772dc(0x1ef)],_0x1451c0['addEventListener'](_0x4772dc(0x260),()=>{const _0x27960=_0x4772dc;stationInput[_0x27960(0x235)]=_0x1bfe89['stationName'],suggestions[_0x27960(0x229)]='',fetchTrainData(_0x1bfe89[_0x27960(0x1e6)]);}),suggestions[_0x4772dc(0x256)](_0x1451c0);});}}),loadStationData();
+
+    </script>
+
+</body>
+</html>
+	
+    
+
+
